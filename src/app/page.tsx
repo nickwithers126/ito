@@ -1,7 +1,22 @@
+"use client"
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Home() {
+
+  const supabase = createClient();
+
+  async function handleGoogleLogin() {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+  }
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-10 bg-background px-6">
       <div className="flex flex-col items-center gap-4 text-center">
@@ -18,7 +33,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Button size="lg" variant="outline" className="w-full max-w-xs gap-2">
+      <Button size="lg" variant="outline" className="w-full max-w-xs gap-2" onClick={handleGoogleLogin}>
         <GoogleIcon className="size-4" />
         Continue with Google
       </Button>
