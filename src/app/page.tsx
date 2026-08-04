@@ -33,7 +33,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Button size="lg" variant="outline" className="w-full max-w-xs gap-2" onClick={handleGoogleLogin}>
+      <Button size="lg" variant="outline" className="w-full max-w-xs gap-2 hover:cursor-pointer" onClick={handleGoogleLogin}>
         <GoogleIcon className="size-4" />
         Continue with Google
       </Button>

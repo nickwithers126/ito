@@ -1,4 +1,9 @@
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/lib/supabase/server";
+import { NewTripDrawer } from "@/components/new-trip-drawer";
+import { TripCardMenu } from "@/components/trip-card-menu";
+import Link from "next/link";
+
 
 function formatDateRange(startDate: string, endDate: string) {
   const start = new Date(startDate);
@@ -22,24 +27,35 @@ function formatUpdated(updatedDate: string) {
   return `Updated ${updated.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
 }
 
-export default function Trips() {
+export default async function Trips() {
 
-  const trips = [
-    { id: "1", name: "Japan / Korea", destinations: ["Tokyo", "Kyoto", "Seoul"], startDate: "2026-11-10", endDate: "2026-11-21", updatedDate: "2026-08-01" },
-    { id: "2", name: "London / Ireland", destinations: ["London", "Dublin", "Galway"], startDate: "2027-07-04", endDate: "2027-07-12", updatedDate: "2026-07-29" },
-  ];
+  const supabase = await createClient();
+  const tripsResponse = await supabase.from("trips").select("*");
+  const trips = tripsResponse.data;
+
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6">
-      {trips.map((trip) => (
+    <div className="flex flex-1 flex-col items-center gap-4 px-6 py-8">
+      <div className="flex flex-row justify-between w-full max-w-lg">
+        <h1 className="text-2xl font-bold">Your trips</h1>
+        <NewTripDrawer />
+      </div>
+      {trips?.map((trip) => (
         <Card key={trip.id} className="w-full max-w-lg gap-4">
           <CardContent className="flex flex-col gap-1">
-            <CardTitle className="text-lg font-bold">{trip.name}</CardTitle>
-            <p className="text-sm text-foreground/70">{formatDateRange(trip.startDate, trip.endDate)}</p>
+            <CardTitle className="text-lg font-bold">
+                <div className="flex flex-row justify-between items-center">
+                  <Link href={`/trips/${trip.id}`} className="hover:underline">
+                    {trip.name}
+                  </Link>
+                  <TripCardMenu tripId={trip.id} tripName={trip.name} />
+                </div>
+            </CardTitle>
+            <p className="text-sm text-foreground/70">{formatDateRange(trip.start_date, trip.end_date)}</p>
             <p className="text-sm text-foreground/70">{trip.destinations.join(" • ")}</p>
           </CardContent>
           <CardFooter>
-            <p className="text-xs text-muted-foreground">{formatUpdated(trip.updatedDate)}</p>
+            <p className="text-xs text-muted-foreground">{formatUpdated(trip.updated_at)}</p>
           </CardFooter>
         </Card>
       ))}
