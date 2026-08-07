@@ -89,8 +89,8 @@ export function NewTripDrawer() {
     async function handleCreateTrip() {
         const tripResponse = await supabase.from("trips").insert({
             name: tripName,
-            start_date: startDate ? format(startDate, "yyyy-MM-dd") : null,
-            end_date: endDate ? format(endDate, "yyyy-MM-dd") : null,
+            start_date: format(startDate!, "yyyy-MM-dd"),
+            end_date: format(endDate!, "yyyy-MM-dd"),
             destinations: destinations,
         }).select().single();
 

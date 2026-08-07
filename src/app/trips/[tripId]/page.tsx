@@ -2,9 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Play, Sparkles } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { Separator } from "@/components/ui/separator";
+import { DayDestinationSelect } from "@/components/day-destination-select";
 
 function formatDayLabel(date: string) {
   return parseISO(date).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
@@ -22,14 +23,25 @@ function formatTripSummary(startDate: string, endDate: string, destinations: str
 export default async function TripDetail({ params }: { params: Promise<{ tripId: string }> }) {
   const { tripId } = await params;
   const supabase = await createClient();
-  const tripResponse = await supabase.from("trips").select("*").eq("id", tripId).single();
+  const tripResponse = await supabase.from("trips").select("*").eq("id", Number(tripId)).single();
   const trip = tripResponse.data;
-  const daysResponse = await supabase.from("itinerary_days").select("*").eq("trip_id", trip.id);
-  const days = daysResponse.data; 
 
   if (!trip) {
     notFound();
   }
+
+  const daysResponse = await supabase
+    .from("itinerary_days")
+    .select("*")
+    .eq("trip_id", trip.id)
+    .order("date", { ascending: true});
+  const days = daysResponse.data; 
+
+  const destinationOptions: { label: string; value: string | null }[] = trip.destinations.map((destination: string) => ({
+    label: destination,
+    value: destination,
+  }));
+  destinationOptions.push({ label: "Destination", value: null });
 
   return (
     <div className="flex flex-1 flex-col items-center gap-4 px-6 py-8">
@@ -42,16 +54,16 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
-            <Play className="size-4" />
+            <Sparkles className="size-4" />
             Run audit
           </Button>
         </div>
       </div>
       {days!.map((day, index) => (
         <Card key={day.id} className="w-full max-w-2xl gap-3">
-          <CardContent className="flex flex-col gap-0.5">
+          <CardContent className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-baseline gap-2">
+              <div className="flex items-baseline gap-3">
                 <CardTitle className="text-lg font-bold">Day {index + 1}</CardTitle>
                 <p className="text-sm text-foreground/70">{formatDayLabel(day.date)}</p>
               </div>
@@ -60,7 +72,10 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
                 Add item
               </Button>
             </div>
-            <p className="text-sm text-foreground/70">{day.destination}</p>
+            <DayDestinationSelect 
+              dayId={day.id} 
+              initialDestination={day.destination} 
+              destinationOptions={destinationOptions} />
           </CardContent>
           <Separator />
           <CardContent>
