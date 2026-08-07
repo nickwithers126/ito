@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
+import { format, eachDayOfInterval } from "date-fns"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
 import {
@@ -87,13 +87,32 @@ export function NewTripDrawer() {
     }
 
     async function handleCreateTrip() {
-        await supabase.from("trips").insert({
+        const tripResponse = await supabase.from("trips").insert({
             name: tripName,
             start_date: startDate ? format(startDate, "yyyy-MM-dd") : null,
             end_date: endDate ? format(endDate, "yyyy-MM-dd") : null,
             destinations: destinations,
-        });
+        }).select().single();
 
+        if (tripResponse.error) {
+            console.error("Error creating trip:", tripResponse.error);
+            return;
+        }
+
+        const tripId = tripResponse.data.id;  
+        const days = eachDayOfInterval({ start: startDate!, end: endDate! });
+        const dayInserts = days.map((day) => ({
+            trip_id: tripId,
+            date: format(day, "yyyy-MM-dd"),
+        }));
+
+        const daysResponse = await supabase.from("itinerary_days").insert(dayInserts);
+        
+        if (daysResponse.error) {
+            console.error("Error inserting itinerary days:", daysResponse.error);
+            return;
+        }
+  
         handleOpenChange(false);
         router.refresh();
     }

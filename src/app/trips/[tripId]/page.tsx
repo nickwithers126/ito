@@ -2,17 +2,17 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Play } from "lucide-react";
-import { differenceInCalendarDays } from "date-fns";
+import { Plus, Play, Sparkles } from "lucide-react";
+import { differenceInCalendarDays, parseISO } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 
 function formatDayLabel(date: string) {
-  return new Date(date).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+  return parseISO(date).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
 }
 
 function formatTripSummary(startDate: string, endDate: string, destinations: string[]) {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = parseISO(startDate);
+  const end = parseISO(endDate);
   const startLabel = start.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   const endLabel = end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   const dayCount = differenceInCalendarDays(end, start) + 1;
@@ -24,16 +24,12 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
   const supabase = await createClient();
   const tripResponse = await supabase.from("trips").select("*").eq("id", tripId).single();
   const trip = tripResponse.data;
+  const daysResponse = await supabase.from("itinerary_days").select("*").eq("trip_id", trip.id);
+  const days = daysResponse.data; 
 
   if (!trip) {
     notFound();
   }
-
-  const days = [
-    { id: "1", date: "2026-11-10", destination: "Tokyo" },
-    { id: "2", date: "2026-11-11", destination: "Tokyo" },
-    { id: "3", date: "2026-11-12", destination: "Kyoto" },
-  ];
 
   return (
     <div className="flex flex-1 flex-col items-center gap-4 px-6 py-8">
@@ -46,16 +42,12 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
-            <Plus className="size-4" />
-            Add item
-          </Button>
-          <Button variant="outline">
             <Play className="size-4" />
             Run audit
           </Button>
         </div>
       </div>
-      {days.map((day, index) => (
+      {days!.map((day, index) => (
         <Card key={day.id} className="w-full max-w-2xl gap-3">
           <CardContent className="flex flex-col gap-0.5">
             <div className="flex items-center justify-between">

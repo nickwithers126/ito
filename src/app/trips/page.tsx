@@ -3,11 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { NewTripDrawer } from "@/components/new-trip-drawer";
 import { TripCardMenu } from "@/components/trip-card-menu";
 import Link from "next/link";
-
+import { parseISO } from "date-fns";
 
 function formatDateRange(startDate: string, endDate: string) {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = parseISO(startDate);
+  const end = parseISO(endDate);
   const startLabel = start.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   const endLabel = end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   return `${startLabel} – ${endLabel}`;
