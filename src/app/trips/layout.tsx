@@ -15,7 +15,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
       <header className="flex justify-between p-4">
         <Link href="/trips" className="flex items-center gap-2">
           <Image src="/ito_logo.png" alt="ito logo" width={48} height={48} />
-          <p className="text-2xl font-semibold tracking-tight">ito</p>
+          <p className="text-3xl font-semibold tracking-wider">ito</p>
         </Link>
         <div>
           <UserMenu avatarUrl={user_avatar_url} name={user_fullname} />

@@ -18,25 +18,33 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-10 bg-background px-6">
-      <div className="flex flex-col items-center gap-4 text-center">
+    <div className="relative flex flex-1 flex-col items-center justify-center gap-10 px-6">
+      <Image src="/background.png" alt="" fill priority className="object-cover -z-10" />
+
+      <div className="absolute left-0 top-4 flex items-center gap-2 px-4">
         <Image
           src="/ito_logo.png"
           alt="ito logo"
-          width={72}
-          height={72}
+          width={48}
+          height={48}
           priority
         />
-        <div className="flex flex-col items-center gap-1">
-          <h1 className="text-3xl font-semibold tracking-tight">ito</h1>
-          <p className="text-md text-muted-foreground">your itinerary helper</p>
-        </div>
+        <h1 className="text-3xl font-semibold tracking-wider text-white">
+          ito
+        </h1>
       </div>
 
-      <Button size="lg" variant="outline" className="w-full max-w-xs gap-2 hover:cursor-pointer" onClick={handleGoogleLogin}>
-        <GoogleIcon className="size-4" />
-        Continue with Google
-      </Button>
+      <div className="flex flex-col items-start gap-20 -translate-y-16 xl:-translate-y-32">
+        <div className="text-2xl text-white">
+          <p className="font-semibold">meet ito.</p>
+          <p>your itinerary helper.</p>
+        </div>
+
+        <Button size="lg" variant="outline" className="w-full max-w-xs gap-2 hover:cursor-pointer" onClick={handleGoogleLogin}>
+          <GoogleIcon className="size-4" />
+          Continue with Google
+        </Button>
+      </div>
     </div>
   );
 }
