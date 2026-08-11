@@ -29,15 +29,18 @@ import { Plus } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { StayFields, type StayData } from "./stay-fields";
+import { ActivityFields, type ActivityData } from "./activity-fields";
 
 export function AddItemDrawer({ 
     tripStartDate, 
     tripEndDate, 
-    days 
+    days,
+    dayId 
 }: { 
     tripStartDate: string; 
     tripEndDate: string; 
-    days: { id: string; date: string}[]
+    days: { id: number; date: string}[];
+    dayId: number;
  }) {
     const startDate = parseISO(tripStartDate);
     const endDate = parseISO(tripEndDate);
@@ -56,6 +59,13 @@ export function AddItemDrawer({
         location: "",
         notes: "",
     })
+        const [activityData, setActivityData] = React.useState<ActivityData>({
+        name: "",
+        status: null as "booked" | "planned" | "idea" | null,
+        time: "",
+        location: "",
+        notes: "",
+    })
     const itemTypeOptions = [
         { label: "Stay", value: "stay" },
         { label: "Travel", value: "travel" },
@@ -64,16 +74,21 @@ export function AddItemDrawer({
     ]
     const isFormValid =
         (itemType === "stay" &&
-        stayData.name.trim() !== "" &&
-        stayData.location.trim() !== "" &&
-        stayData.status !== null &&
-        stayData.checkInDate !== undefined &&
-        stayData.checkInTime.trim() !== "" &&
-        stayData.checkOutDate !== undefined &&
-        stayData.checkOutTime.trim() !== "" &&
-        stayData.checkInDate < stayData.checkOutDate &&
-        stayData.checkInDate >= startDate &&
-        stayData.checkOutDate <= endDate)
+            stayData.name.trim() !== "" &&
+            stayData.location.trim() !== "" &&
+            stayData.status !== null &&
+            stayData.checkInDate !== undefined &&
+            stayData.checkInTime.trim() !== "" &&
+            stayData.checkOutDate !== undefined &&
+            stayData.checkOutTime.trim() !== "" &&
+            stayData.checkInDate < stayData.checkOutDate &&
+            stayData.checkInDate >= startDate &&
+            stayData.checkOutDate <= endDate) ||
+        (itemType === "activity" &&
+            activityData.name.trim() !== "" &&
+            activityData.location.trim() !== "" &&
+            activityData.status !== null &&
+            activityData.time.trim() !== "")
 
 
     function handleOpenChange(nextOpen: boolean) {
@@ -87,6 +102,13 @@ export function AddItemDrawer({
                 checkInTime: "",
                 checkOutDate: undefined,
                 checkOutTime: "",
+                location: "",
+                notes: "",
+            })
+            setActivityData({
+                name: "",
+                status: null,
+                time: "",
                 location: "",
                 notes: "",
             })
@@ -128,6 +150,26 @@ export function AddItemDrawer({
             handleOpenChange(false);
             router.refresh();
         }
+
+        if (itemType === "activity") {
+            const addItemResponse = await supabase.from("itinerary_items").insert({
+                name: activityData.name,
+                day_id: dayId,
+                type: itemType,
+                status: activityData.status,
+                notes: activityData.notes,
+                location: activityData.location,
+                time: activityData.time,
+            }).select().single();
+
+            if (addItemResponse.error) {
+                console.error("Error adding item:", addItemResponse.error);
+                return;
+            }
+
+            handleOpenChange(false);
+            router.refresh();
+        }
     }
 
     return (
@@ -146,11 +188,11 @@ export function AddItemDrawer({
                 <DrawerTitle>Add an itinerary item</DrawerTitle>
                 <DrawerDescription>Choose a type, then fill in the details</DrawerDescription>
             </DrawerHeader>
-            <div>
+            <div className="flex-1 overflow-y-auto">
                 <Field className="p-4 pb-0">
                     <FieldLabel htmlFor="input-trip-name">Item type</FieldLabel>
                         <Select value={itemType} onValueChange={handleItemTypeChange} items={itemTypeOptions}>
-                            <SelectTrigger className="-ml-1 w-fit max-w-40" size="sm">
+                            <SelectTrigger className="w-fit max-w-40" size="sm">
                                 <SelectValue placeholder="Item type" />
                             </SelectTrigger>
                             <SelectContent>
@@ -167,7 +209,7 @@ export function AddItemDrawer({
                 </Field>
                 {itemType == "stay" && <StayFields data={stayData} onChange={setStayData}/> }
                 {itemType == "travel" && <div /> }
-                {itemType == "activity" && <div /> }
+                {itemType == "activity" && <ActivityFields data={activityData} onChange={setActivityData}/> }
                 {itemType == "food & drink" && <div /> }
             </div>
             <DrawerFooter>

@@ -68,7 +68,7 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
                 <CardTitle className="text-lg font-bold">Day {index + 1}</CardTitle>
                 <p className="text-sm text-foreground/70">{formatDayLabel(day.date)}</p>
               </div>
-              <AddItemDrawer tripStartDate={trip.start_date} tripEndDate={trip.end_date} days={days!}/>
+              <AddItemDrawer tripStartDate={trip.start_date} tripEndDate={trip.end_date} days={days!} dayId={day.id}/>
             </div>
             <DayDestinationSelect 
               dayId={day.id} 

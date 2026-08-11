@@ -148,7 +148,7 @@ export function StayFields({ data, onChange }: { data: StayData; onChange: (data
             <Field>
                 <FieldLabel htmlFor="input-status">Status</FieldLabel>
                     <Select value={data.status} onValueChange={handleStatusChange} items={statusOptions}>
-                        <SelectTrigger className="-ml-1 w-fit max-w-40" size="sm">
+                        <SelectTrigger className="w-fit max-w-40" size="sm">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
