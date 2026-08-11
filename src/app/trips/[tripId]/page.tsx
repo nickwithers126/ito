@@ -2,10 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { DayDestinationSelect } from "@/components/day-destination-select";
+import { AddItemDrawer } from "@/components/add-item-drawer";
 
 function formatDayLabel(date: string) {
   return parseISO(date).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
@@ -67,20 +68,17 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
                 <CardTitle className="text-lg font-bold">Day {index + 1}</CardTitle>
                 <p className="text-sm text-foreground/70">{formatDayLabel(day.date)}</p>
               </div>
-              <Button variant="outline" size="sm">
-                <Plus className="size-4" />
-                Add item
-              </Button>
+              <AddItemDrawer tripStartDate={trip.start_date} tripEndDate={trip.end_date} days={days!}/>
             </div>
             <DayDestinationSelect 
               dayId={day.id} 
               initialDestination={day.destination} 
               destinationOptions={destinationOptions} />
           </CardContent>
-          <Separator />
-          <CardContent>
+          {/* <Separator /> */}
+          {/* <CardContent> */}
             {/* Items for this day will render here */}
-          </CardContent>
+          {/* </CardContent> */}
         </Card>
       ))}
     </div>

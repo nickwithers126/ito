@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import * as React from "react"
 import { format, eachDayOfInterval } from "date-fns"
