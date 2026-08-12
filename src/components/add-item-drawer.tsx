@@ -30,6 +30,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { StayFields, type StayData } from "./stay-fields";
 import { ActivityFields, type ActivityData } from "./activity-fields";
+import { FoodDrinkFields, type FoodDrinkData } from "./food-drink-fields";
 
 export function AddItemDrawer({ 
     tripStartDate, 
@@ -59,7 +60,14 @@ export function AddItemDrawer({
         location: "",
         notes: "",
     })
-        const [activityData, setActivityData] = React.useState<ActivityData>({
+    const [activityData, setActivityData] = React.useState<ActivityData>({
+        name: "",
+        status: null as "booked" | "planned" | "idea" | null,
+        time: "",
+        location: "",
+        notes: "",
+    })
+    const [foodDrinkData, setFoodDrinkData] = React.useState<FoodDrinkData>({
         name: "",
         status: null as "booked" | "planned" | "idea" | null,
         time: "",
@@ -88,6 +96,11 @@ export function AddItemDrawer({
             activityData.name.trim() !== "" &&
             activityData.location.trim() !== "" &&
             activityData.status !== null &&
+            activityData.time.trim() !== "") ||
+        (itemType === "food & drink" &&
+            activityData.name.trim() !== "" &&
+            activityData.location.trim() !== "" &&
+            activityData.status !== null &&
             activityData.time.trim() !== "")
 
 
@@ -104,14 +117,21 @@ export function AddItemDrawer({
                 checkOutTime: "",
                 location: "",
                 notes: "",
-            })
+            });
             setActivityData({
                 name: "",
                 status: null,
                 time: "",
                 location: "",
                 notes: "",
-            })
+            });
+            setFoodDrinkData({
+                name: "",
+                status: null,
+                time: "",
+                location: "",
+                notes: "",
+            });
         }
     }
 
@@ -170,6 +190,26 @@ export function AddItemDrawer({
             handleOpenChange(false);
             router.refresh();
         }
+
+        if (itemType === "food & drink") {
+            const addItemResponse = await supabase.from("itinerary_items").insert({
+                name: foodDrinkData.name,
+                day_id: dayId,
+                type: itemType,
+                status: foodDrinkData.status,
+                notes: foodDrinkData.notes,
+                location: foodDrinkData.location,
+                time: foodDrinkData.time,
+            }).select().single();
+
+            if (addItemResponse.error) {
+                console.error("Error adding item:", addItemResponse.error);
+                return;
+            }
+
+            handleOpenChange(false);
+            router.refresh();
+        }
     }
 
     return (
@@ -210,7 +250,7 @@ export function AddItemDrawer({
                 {itemType == "stay" && <StayFields data={stayData} onChange={setStayData}/> }
                 {itemType == "travel" && <div /> }
                 {itemType == "activity" && <ActivityFields data={activityData} onChange={setActivityData}/> }
-                {itemType == "food & drink" && <div /> }
+                {itemType == "food & drink" && <FoodDrinkFields data={foodDrinkData} onChange={setFoodDrinkData}/> }
             </div>
             <DrawerFooter>
                 <Button className="hover:cursor-pointer" onClick={handleAddItem} disabled={!isFormValid}>
