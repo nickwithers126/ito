@@ -31,6 +31,7 @@ import { useRouter } from "next/navigation"
 import { StayFields, type StayData } from "./stay-fields";
 import { ActivityFields, type ActivityData } from "./activity-fields";
 import { FoodDrinkFields, type FoodDrinkData } from "./food-drink-fields";
+import { TravelFields, type TravelData } from "./travel-fields";
 
 export function AddItemDrawer({ 
     tripStartDate, 
@@ -74,6 +75,16 @@ export function AddItemDrawer({
         location: "",
         notes: "",
     })
+    const [travelData, setTravelData] = React.useState<TravelData>({
+        name: "",
+        status: null as "booked" | "planned" | "idea" | null,
+        from: "",
+        to: "",
+        startTime: "",
+        endTime: "",
+        transportation: null as "flight" | "train" | "car" | "bus" | "ferry" | "walk" | "other" | null,
+        notes: "",
+    })
     const itemTypeOptions = [
         { label: "Stay", value: "stay" },
         { label: "Travel", value: "travel" },
@@ -98,10 +109,18 @@ export function AddItemDrawer({
             activityData.status !== null &&
             activityData.time.trim() !== "") ||
         (itemType === "food & drink" &&
-            activityData.name.trim() !== "" &&
-            activityData.location.trim() !== "" &&
-            activityData.status !== null &&
-            activityData.time.trim() !== "")
+            foodDrinkData.name.trim() !== "" &&
+            foodDrinkData.location.trim() !== "" &&
+            foodDrinkData.status !== null &&
+            foodDrinkData.time.trim() !== "") ||
+        (itemType === "travel" &&
+            travelData.name.trim() !== "" &&
+            travelData.transportation !== null &&
+            travelData.from.trim() !== "" &&
+            travelData.to.trim() !== "" &&
+            travelData.status !== null &&
+            travelData.startTime.trim() !== ""
+        )
 
 
     function handleOpenChange(nextOpen: boolean) {
@@ -130,6 +149,16 @@ export function AddItemDrawer({
                 status: null,
                 time: "",
                 location: "",
+                notes: "",
+            });
+            setTravelData({
+                name: "",
+                status: null,
+                transportation: null,
+                from: "",
+                to: "",
+                startTime: "",
+                endTime: "",
                 notes: "",
             });
         }
@@ -210,6 +239,29 @@ export function AddItemDrawer({
             handleOpenChange(false);
             router.refresh();
         }
+
+        if (itemType === "travel") {
+            const addItemResponse = await supabase.from("itinerary_items").insert({
+                name: travelData.name,
+                day_id: dayId,
+                type: itemType,
+                status: travelData.status,
+                notes: travelData.notes,
+                transportation: travelData.transportation,
+                from: travelData.from,
+                to: travelData.to,
+                start_time: travelData.startTime,
+                end_time: travelData.endTime || null,
+            }).select().single();
+
+            if (addItemResponse.error) {
+                console.error("Error adding item:", addItemResponse.error);
+                return;
+            }
+
+            handleOpenChange(false);
+            router.refresh();
+        }
     }
 
     return (
@@ -228,7 +280,7 @@ export function AddItemDrawer({
                 <DrawerTitle>Add an itinerary item</DrawerTitle>
                 <DrawerDescription>Choose a type, then fill in the details</DrawerDescription>
             </DrawerHeader>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 min-h-24 overflow-y-auto">
                 <Field className="p-4 pb-0">
                     <FieldLabel htmlFor="input-trip-name">Item type</FieldLabel>
                         <Select value={itemType} onValueChange={handleItemTypeChange} items={itemTypeOptions}>
@@ -248,7 +300,7 @@ export function AddItemDrawer({
                         </Select>  
                 </Field>
                 {itemType == "stay" && <StayFields data={stayData} onChange={setStayData}/> }
-                {itemType == "travel" && <div /> }
+                {itemType == "travel" && <TravelFields data={travelData} onChange={setTravelData}/> }
                 {itemType == "activity" && <ActivityFields data={activityData} onChange={setActivityData}/> }
                 {itemType == "food & drink" && <FoodDrinkFields data={foodDrinkData} onChange={setFoodDrinkData}/> }
             </div>

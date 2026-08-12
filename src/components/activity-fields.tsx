@@ -64,7 +64,7 @@ export function ActivityFields({ data, onChange }: { data: ActivityData; onChang
                 />
             </Field>
             <Field>
-                <FieldLabel htmlFor="activity-notes">Notes</FieldLabel>
+                <FieldLabel htmlFor="activity-notes">Notes <span className="text-muted-foreground">(optional)</span></FieldLabel>
                 <Textarea
                     id="activity-notes"
                     placeholder="e.g. what to bring, meeting point details"

@@ -64,7 +64,7 @@ export function FoodDrinkFields({ data, onChange }: { data: FoodDrinkData; onCha
                 />
             </Field>
             <Field>
-                <FieldLabel htmlFor="food-drink-notes">Notes</FieldLabel>
+                <FieldLabel htmlFor="food-drink-notes">Notes <span className="text-muted-foreground">(optional)</span></FieldLabel>
                 <Textarea
                     id="food-drink-notes"
                     placeholder="e.g. dietary restrictions, reservation name"

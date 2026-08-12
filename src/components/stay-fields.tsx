@@ -137,7 +137,7 @@ export function StayFields({ data, onChange }: { data: StayData; onChange: (data
                 />
             </Field>
             <Field>
-                <FieldLabel htmlFor="stay-notes">Notes</FieldLabel>
+                <FieldLabel htmlFor="stay-notes">Notes <span className="text-muted-foreground">(optional)</span></FieldLabel>
                 <Textarea
                     id="stay-notes"
                     placeholder="e.g. confirmation number, late check-out arranged"
