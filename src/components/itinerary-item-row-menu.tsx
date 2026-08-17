@@ -17,31 +17,31 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Ellipsis } from "lucide-react";
 
-export function TripCardMenu({ tripId, tripName } : { tripId: number; tripName: string }) {
+export function ItineraryItemRowMenu({ itemId, itemName } : { itemId: number; itemName: string }) {
     const router = useRouter();
     const supabase = createClient();
 
-    async function handleDeleteTrip()  {
-        await supabase.from("trips").delete().eq("id", tripId)
+    async function handleDeleteItineraryItem()  {
+        await supabase.from("itinerary_items").delete().eq("id", itemId)
         router.refresh();
     }
 
     return (
         <Popover>
-            <PopoverTrigger render={<button type="button" className="hover:cursor-pointer" aria-label={`Options for ${tripName}`}><Ellipsis /></button>} />
+            <PopoverTrigger render={<button type="button" className="hover:cursor-pointer" aria-label={`Options for ${itemName}`}><Ellipsis /></button>} />
             <PopoverContent align="end" className="w-auto p-3">
                 <AlertDialog>
                     <AlertDialogTrigger render={
-                        <Button type="button" className="hover:cursor-pointer" variant="destructive" aria-label={`Delete ${tripName}`}>
-                            Delete trip
+                        <Button type="button" className="hover:cursor-pointer" variant="destructive" aria-label={`Delete ${itemName}`}>
+                            Delete item
                         </Button>} />
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>
-                                Delete &quot;{tripName}&quot;?
+                                Delete &quot;{itemName}&quot;?
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the trip and all associated data.
+                                This action cannot be undone. This will permanently delete this item from your itinerary.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -49,8 +49,8 @@ export function TripCardMenu({ tripId, tripName } : { tripId: number; tripName: 
                             <AlertDialogAction
                               type="button"
                               className="hover:cursor-pointer"
-                              aria-label={`Confirm delete ${tripName}`}
-                              onClick={handleDeleteTrip}
+                              aria-label={`Confirm delete ${itemName}`}
+                              onClick={handleDeleteItineraryItem}
                             >
                               Continue
                             </AlertDialogAction>

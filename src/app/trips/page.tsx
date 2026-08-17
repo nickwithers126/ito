@@ -48,7 +48,7 @@ export default async function Trips() {
                   <Link href={`/trips/${trip.id}`} className="hover:underline">
                     {trip.name}
                   </Link>
-                  <TripCardMenu tripId={String(trip.id)} tripName={trip.name} />
+                  <TripCardMenu tripId={trip.id} tripName={trip.name} />
                 </div>
             </CardTitle>
             <p className="text-sm text-foreground/70">{formatDateRange(trip.start_date, trip.end_date)}</p>
