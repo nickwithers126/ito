@@ -31,7 +31,7 @@ export function ItineraryItemRow({ item }: { item: ItineraryItem }) {
             <p className="text-sm text-foreground/70">{item.location}</p>
           </div>
           <p className={`text-sm text-right font-semibold ${getStatusColor(item.status)}`}>{item.status}</p>
-          <ItineraryItemRowMenu itemId={item.id} itemName={item.name}/>
+          <ItineraryItemRowMenu itemId={item.id} itemName={item.name} status={item.status} notes={item.notes}/>
         </div>
       )
     case "activity":
@@ -45,7 +45,7 @@ export function ItineraryItemRow({ item }: { item: ItineraryItem }) {
             <p className="text-sm text-foreground/70">{item.location}</p>
           </div>
           <p className={`text-sm text-right font-semibold ${getStatusColor(item.status)}`}>{item.status}</p>
-          <ItineraryItemRowMenu itemId={item.id} itemName={item.name}/>
+          <ItineraryItemRowMenu itemId={item.id} itemName={item.name} status={item.status} notes={item.notes}/>
         </div>
       )
     case "stay":
@@ -59,7 +59,7 @@ export function ItineraryItemRow({ item }: { item: ItineraryItem }) {
             <p className="text-sm text-foreground/70">{item.location}</p>
           </div>
           <p className={`text-sm text-right font-semibold ${getStatusColor(item.status)}`}>{item.status}</p>
-          <ItineraryItemRowMenu itemId={item.id} itemName={item.name}/>
+          <ItineraryItemRowMenu itemId={item.id} itemName={item.name} status={item.status} notes={item.notes}/>
         </div>
       )
     case "travel":
@@ -73,7 +73,7 @@ export function ItineraryItemRow({ item }: { item: ItineraryItem }) {
             <p className="text-sm text-foreground/70">{item.from} → {item.to}</p>
           </div>
           <p className={`text-sm text-right font-semibold ${getStatusColor(item.status)}`}>{item.status}</p>
-          <ItineraryItemRowMenu itemId={item.id} itemName={item.name}/>
+          <ItineraryItemRowMenu itemId={item.id} itemName={item.name} status={item.status} notes={item.notes}/>
         </div>
       )
     default:

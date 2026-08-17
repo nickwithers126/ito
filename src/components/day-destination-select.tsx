@@ -18,9 +18,9 @@ export function DayDestinationSelect({
     const supabase = createClient();
     const router = useRouter();
 
-    async function handleDestinationChange(value: string | null) {
-        setDestination(value);
-        const response = await supabase.from("itinerary_days").update({ destination: value}).eq("id", dayId);
+    async function handleDestinationChange(newDestination: string | null) {
+        setDestination(newDestination);
+        const response = await supabase.from("itinerary_days").update({ destination: newDestination }).eq("id", dayId);
         if (response.error) {
             console.error("Failed to update destination:", response.error.message);
         }
