@@ -2,12 +2,13 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ClipboardCheck } from "lucide-react";
 import { differenceInCalendarDays, parseISO } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { DayDestinationSelect } from "@/components/day-destination-select";
 import { AddItemDrawer } from "@/components/add-item-drawer";
 import { ItineraryItemRow } from "@/components/itinerary-item-row";
+import Link from "next/link"
 
 function formatDayLabel(date: string) {
   return parseISO(date).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
@@ -67,6 +68,12 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
   }));
   destinationOptions.push({ label: "Destination", value: null });
 
+  const auditResponse = await supabase.from("audits").select("*").eq("trip_id", Number(tripId)).maybeSingle();
+  if (auditResponse.error) {
+    console.error("Error fetching audit:", auditResponse.error.message, auditResponse.error.details, auditResponse.error.hint);
+  }
+  const hasAudit = auditResponse.data != null;
+
   return (
     <div className="flex flex-1 flex-col items-center gap-4 px-6 py-8">
       <div className="flex w-full max-w-2xl items-center justify-between gap-4">
@@ -77,9 +84,9 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">
-            <Sparkles className="size-4" />
-            Run audit
+          <Button variant="outline" nativeButton={false} render={<Link href={`/trips/${trip.id}/audit`} />}>
+            {hasAudit ? <ClipboardCheck className="size-4" /> : <Sparkles className="size-4" />}
+            {hasAudit ? "View audit" : "Run audit"}
           </Button>
         </div>
       </div>

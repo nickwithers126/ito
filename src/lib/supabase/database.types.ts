@@ -14,6 +14,76 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_items: {
+        Row: {
+          audit_id: number
+          description: string
+          id: number
+          related_date: string | null
+          severity: string
+          status: string
+          title: string
+        }
+        Insert: {
+          audit_id: number
+          description: string
+          id?: number
+          related_date?: string | null
+          severity: string
+          status?: string
+          title: string
+        }
+        Update: {
+          audit_id?: number
+          description?: string
+          id?: number
+          related_date?: string | null
+          severity?: string
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_items_audit_id_fkey"
+            columns: ["audit_id"]
+            isOneToOne: false
+            referencedRelation: "audits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audits: {
+        Row: {
+          generated_at: string
+          id: number
+          readiness_score: number
+          summary: string
+          trip_id: number
+        }
+        Insert: {
+          generated_at: string
+          id?: number
+          readiness_score: number
+          summary: string
+          trip_id: number
+        }
+        Update: {
+          generated_at?: string
+          id?: number
+          readiness_score?: number
+          summary?: string
+          trip_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audits_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       itinerary_days: {
         Row: {
           date: string
