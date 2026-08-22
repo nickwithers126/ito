@@ -61,7 +61,7 @@ export type Database = {
           trip_id: number
         }
         Insert: {
-          generated_at: string
+          generated_at?: string
           id?: number
           readiness_score: number
           summary: string

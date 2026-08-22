@@ -84,7 +84,7 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" nativeButton={false} render={<Link href={`/trips/${trip.id}/audit`} />}>
+          <Button variant="outline" nativeButton={false} render={<Link href={`/trips/${trip.id}/audit`} prefetch={false} />}>
             {hasAudit ? <ClipboardCheck className="size-4" /> : <Sparkles className="size-4" />}
             {hasAudit ? "View audit" : "Run audit"}
           </Button>
