@@ -28,18 +28,14 @@ export default async function Audit({ params }: { params: Promise<{ tripId: stri
         console.error("Error fetching audit:", auditResponse.error.message, auditResponse.error.details, auditResponse.error.hint);
     }
     let audit = auditResponse.data;
+    let auditItems: Database["public"]["Tables"]["audit_items"]["Row"][] = [];
+
 
     if (audit == null) {
-        await generateAudit(Number(tripId));
-        const regeneratedAuditResponse = await supabase.from("audits").select("*").eq("trip_id", Number(tripId)).maybeSingle();
-        if (regeneratedAuditResponse.error) {
-            console.error("Error fetching audit:", regeneratedAuditResponse.error.message, regeneratedAuditResponse.error.details, regeneratedAuditResponse.error.hint);
-        }
-        audit = regeneratedAuditResponse.data;
-    }
-
-    let auditItems: Database["public"]["Tables"]["audit_items"]["Row"][] = [];
-    if (audit) {
+        const newlyGeneratedAudit = await generateAudit(Number(tripId));
+        audit = newlyGeneratedAudit?.audit ?? null;
+        auditItems = newlyGeneratedAudit?.items?? [];
+    } else {
         const auditItemsResponse = await supabase.from("audit_items").select("*").eq("audit_id", audit.id).eq("status", "open");
         if (auditItemsResponse.error) {
             console.error("Error fetching audit items:", auditItemsResponse.error.message, auditItemsResponse.error.details, auditItemsResponse.error.hint);

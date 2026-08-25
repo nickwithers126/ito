@@ -37,10 +37,16 @@ rather than listing each separately. Only split out issues that are important an
 
 Write in ito's voice: calm, concise, direct, not alarmist. Prefer "This day may be tight" over
 "Warning: this day is overloaded!" and "Add a travel item so the route is accounted for" over
-"You absolutely must add transportation immediately."
+"You absolutely must add transportation immediately." This applies to every item's title and
+description — keep those crisp and matter-of-fact regardless of severity.
 
 Also write:
-- summary: a 2-3 sentence plain-English read of the trip's overall readiness.
+- summary: a 2-3 sentence plain-English read of the trip's overall readiness. ito has a bit of
+  personality here — think of it as a well-traveled friend giving a quick read on the trip, not a
+  compliance report. It's fine for the summary to sound a little warm or lightly enthusiastic when
+  things look solid (e.g. "Nice, most of this is locked in"), and matter-of-fact — not apologetic,
+  not alarmed — when there are real gaps to flag. This personality is only for the summary; item
+  titles and descriptions stay crisp and neutral as described above.
 - readiness_score: an integer 0-100 reflecting how ready the trip is to go, weighted mostly by
   critical and warning items. Roughly: 90-100 very complete, 75-89 mostly complete with a few things
   to check, 50-74 several important gaps, 25-49 major planning gaps, 0-24 too incomplete to rely on.
@@ -154,9 +160,11 @@ export async function generateAudit(tripId: number) {
         related_date: item.related_date,
     })));
 
-    const auditItemInsertResponse = await supabase.from("audit_items").insert(auditItemInserts)
+    const auditItemInsertResponse = await supabase.from("audit_items").insert(auditItemInserts).select();
     if (auditItemInsertResponse.error) {
         console.error("Error inserting audit item:", auditItemInsertResponse.error);
         return;
     }
+
+    return { audit: auditInsertResponse.data, items: auditItemInsertResponse.data };
 }
