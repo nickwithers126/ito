@@ -2,9 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
 import { generateAudit } from "@/lib/generate-audit";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
 import { AuditItemCard } from "@/components/audit-item-card";
+import { RerunAuditButton } from "@/components/rerun-audit-button";
 
 export const dynamic = "force-dynamic";
 
@@ -52,10 +51,7 @@ export default async function Audit({ params }: { params: Promise<{ tripId: stri
         <div className="flex flex-1 flex-col items-center gap-8 px-6 py-8">
             <div className="flex flex-row justify-between w-full max-w-2xl">
                 <h1 className="text-2xl font-bold">ito found {auditItemCount} items to check.</h1>
-                <Button variant="outline" className="hover:cursor-pointer">
-                    <Sparkles className="size-4" />
-                    Rerun audit
-                </Button>
+                <RerunAuditButton tripId={Number(tripId)}/>
             </div>
             <div className="flex w-full max-w-2xl flex-row gap-4">
                 <Card className="flex-1 gap-4">
