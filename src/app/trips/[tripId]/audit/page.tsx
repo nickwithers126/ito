@@ -4,6 +4,9 @@ import { generateAudit } from "@/lib/generate-audit";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { AuditItemCard } from "@/components/audit-item-card";
 import { RerunAuditButton } from "@/components/rerun-audit-button";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +54,13 @@ export default async function Audit({ params }: { params: Promise<{ tripId: stri
         <div className="flex flex-1 flex-col items-center gap-8 px-6 py-8">
             <div className="flex flex-row justify-between w-full max-w-2xl">
                 <h1 className="text-2xl font-bold">ito found {auditItemCount} items to check.</h1>
-                <RerunAuditButton tripId={Number(tripId)}/>
+                <div className="flex flex-row gap-2">
+                    <Button variant="outline" className="hover:cursor-pointer" nativeButton={false} render={<Link href={`/trips/${tripId}`} />}>
+                        <ArrowLeft className="size-4" />
+                        Back to trip
+                    </Button>
+                    <RerunAuditButton tripId={Number(tripId)} />
+                </div>
             </div>
             <div className="flex w-full max-w-2xl flex-row gap-4">
                 <Card className="flex-1 gap-4">
