@@ -101,14 +101,14 @@ export default async function TripDetail({ params }: { params: Promise<{ tripId:
             <CardContent className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-baseline gap-3">
-                  <CardTitle className="text-lg font-bold">Day {index + 1}</CardTitle>
-                  <p className="text-sm text-foreground/70">{formatDayLabel(day.date)}</p>
+                  <CardTitle className="text-lg font-bold whitespace-nowrap">Day {index + 1}</CardTitle>
+                  <p className="text-sm text-foreground/70 whitespace-nowrap">{formatDayLabel(day.date)}</p>
                 </div>
                 <AddItemDrawer tripStartDate={trip.start_date} tripEndDate={trip.end_date} days={days!} dayId={day.id}/>
               </div>
-              <DayDestinationSelect 
-                dayId={day.id} 
-                initialDestination={day.destination} 
+              <DayDestinationSelect
+                dayId={day.id}
+                initialDestination={day.destination}
                 destinationOptions={destinationOptions} />
             </CardContent>
             <CardContent className="flex flex-col gap-5">

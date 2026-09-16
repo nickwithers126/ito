@@ -271,9 +271,9 @@ export function AddItemDrawer({
             showSwipeHandle={isMobile} 
             swipeDirection={isMobile ? "down" : "right"}
         >
-        <DrawerTrigger className="px-6" render={<Button variant="outline" size="sm" className="hover:cursor-pointer"/>}>
+        <DrawerTrigger className="px-4" render={<Button variant="outline" size="sm" className="hover:cursor-pointer"/>}>
             <Plus className="size-4" strokeWidth={2.5}/>
-            Add item
+            <span className="hidden sm:inline">Add item</span>
         </DrawerTrigger>
         <DrawerContent>
             <DrawerHeader>
