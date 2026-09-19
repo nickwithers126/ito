@@ -89,14 +89,14 @@ export async function generateAudit(tripId: number) {
     const tripResponse = await supabase.from("trips").select("*").eq("id", tripId).single();
     if (tripResponse.error) {
         console.error("Error fetching trip:", tripResponse.error.message, tripResponse.error.details, tripResponse.error.hint);
-        return;
+        return null;
     }
     const trip = tripResponse.data;
 
     const daysResponse = await supabase.from("itinerary_days").select("*").eq("trip_id", tripId).order("date", { ascending: true});
     if (daysResponse.error) {
         console.error("Error fetching itinerary days:", daysResponse.error.message, daysResponse.error.details, daysResponse.error.hint);
-        return;
+        return null;
     }
     const days = daysResponse.data;
 
@@ -104,7 +104,7 @@ export async function generateAudit(tripId: number) {
     const itemsResponse = await supabase.from("itinerary_items").select("*").in("day_id", dayIds)
     if (itemsResponse.error) {
         console.error("Error fetching itinerary items:", itemsResponse.error.message, itemsResponse.error.details, itemsResponse.error.hint);
-        return;
+        return null;
     }
     const items = itemsResponse.data ?? [];
 
@@ -132,13 +132,13 @@ export async function generateAudit(tripId: number) {
         })
     } catch (error) {
         console.error("OpenAI request failed:", error);
-        return;
+        return null;
     }   
 
     const audit = response.output_parsed;
     if (!audit) {
         console.error("Audit generation failed");
-        return;
+        return null;
     }
 
     const auditInsertResponse = await supabase.from("audits").insert({
@@ -148,7 +148,7 @@ export async function generateAudit(tripId: number) {
     }).select().single();
     if (auditInsertResponse.error || !auditInsertResponse.data) {
         console.error("Error inserting audit:", auditInsertResponse.error);
-        return;
+        return null;
     }
 
     const auditId = auditInsertResponse.data.id;
@@ -163,7 +163,7 @@ export async function generateAudit(tripId: number) {
     const auditItemInsertResponse = await supabase.from("audit_items").insert(auditItemInserts).select();
     if (auditItemInsertResponse.error) {
         console.error("Error inserting audit item:", auditItemInsertResponse.error);
-        return;
+        return null;
     }
 
     return { audit: auditInsertResponse.data, items: auditItemInsertResponse.data };

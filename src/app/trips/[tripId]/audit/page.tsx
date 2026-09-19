@@ -31,12 +31,17 @@ export default async function Audit({ params }: { params: Promise<{ tripId: stri
     }
     let audit = auditResponse.data;
     let auditItems: Database["public"]["Tables"]["audit_items"]["Row"][] = [];
+    let generationFailed = false;
 
 
     if (audit == null) {
         const newlyGeneratedAudit = await generateAudit(Number(tripId));
-        audit = newlyGeneratedAudit?.audit ?? null;
-        auditItems = newlyGeneratedAudit?.items?? [];
+        if (newlyGeneratedAudit == null) {
+            generationFailed = true;
+        } else {
+            audit = newlyGeneratedAudit.audit;
+            auditItems = newlyGeneratedAudit.items;
+        }
     } else {
         const auditItemsResponse = await supabase.from("audit_items").select("*").eq("audit_id", audit.id).eq("status", "open");
         if (auditItemsResponse.error) {
@@ -49,6 +54,21 @@ export default async function Audit({ params }: { params: Promise<{ tripId: stri
     const criticalCount = auditItems.filter((item) => item.severity == "critical").length;
     const warningCount = auditItems.filter((item) => item.severity == "warning").length;
     const suggestionCount = auditItems.filter((item) => item.severity == "suggestion").length;
+
+    if (generationFailed) {
+        return (
+            <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-8">
+                <p className="text-sm text-foreground/70">ito ran into an error generating this audit. Try again.</p>
+                <div className="flex flex-row gap-2">
+                    <Button variant="outline" className="hover:cursor-pointer" nativeButton={false} render={<Link href={`/trips/${tripId}`} />}>
+                        <ArrowLeft className="size-4" />
+                        Back to trip
+                    </Button>
+                    <RerunAuditButton tripId={Number(tripId)} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-1 flex-col items-center gap-8 px-6 py-8">

@@ -12,8 +12,13 @@ export function RerunAuditButton({ tripId }: { tripId: number }){
 
     async function handleRerun() {
         setIsRerunning(true);
-        await rerunAudit(tripId);
-        setIsRerunning(false);
+        try {
+            await rerunAudit(tripId);
+        } catch (error) {
+            console.error("Failed to rerun audit:", error);
+        } finally {
+            setIsRerunning(false);
+        }
         router.refresh();
     }
 

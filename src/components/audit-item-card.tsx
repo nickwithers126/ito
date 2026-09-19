@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Database } from "@/lib/supabase/database.types";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,12 +39,18 @@ export function AuditItemCard({ item }: {item: AuditItem}) {
 
     const supabase = createClient();
     const router = useRouter();
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     async function changeAuditItemStatus(itemId: number, newStatus: string) {
+        setIsUpdating(true);
+        setError(null);
         const statusResponse = await supabase.from("audit_items").update({status: newStatus}).eq("id", itemId)
         if (statusResponse.error) {
-            console.error("Failed to update status if itinerary item", statusResponse.error);
-            return
+            console.error("Failed to update status of itinerary item", statusResponse.error);
+            setError("Couldn't update this item. Try again.");
+            setIsUpdating(false);
+            return;
         }
         router.refresh();
     }
@@ -64,9 +71,10 @@ export function AuditItemCard({ item }: {item: AuditItem}) {
                             Related: {item.related_date}
                         </p>
                     )}
+                    {error && <p className="text-xs font-semibold text-destructive">{error}</p>}
                     <div className="flex flex-row gap-3 justify-end">
-                        <Button variant="outline" className="hover:cursor-pointer" onClick={() => changeAuditItemStatus(item.id, "handled")}>Mark handled</Button>
-                        <Button variant="outline" className="hover:cursor-pointer" onClick={() => changeAuditItemStatus(item.id, "dismissed")}>Dismiss</Button>
+                        <Button variant="outline" className="hover:cursor-pointer" onClick={() => changeAuditItemStatus(item.id, "handled")} disabled={isUpdating}>Mark handled</Button>
+                        <Button variant="outline" className="hover:cursor-pointer" onClick={() => changeAuditItemStatus(item.id, "dismissed")} disabled={isUpdating}>Dismiss</Button>
                     </div>
                 </CardContent>
             </Card>
